@@ -33,8 +33,13 @@ class CreatePostsTest extends FeaturesTestCase
         $this->see($post['title']);
     }
 
+    /**
+     * redirect if user isn't logged in
+     *
+     * @test
+     */
     public function require_auth_to_create_post(){
-        //Having 
+        //Having
 
 
         //when
@@ -42,5 +47,27 @@ class CreatePostsTest extends FeaturesTestCase
 
         //then
         $this->seePageIs(route('login'));
+    }
+
+    /**
+     * Valid post input fields
+     *
+     * @test
+     */
+    public function create_post_validation(){
+        //having
+
+        $user = $this->default_user();
+
+        //when
+
+        $this->actingAs($user)
+            ->visit(route('posts.create'))
+            ->press('Enviar');
+
+        //then
+        $this->seePageIs(route('posts.create'));
+        $this->seeInElement('#field_title .help-block','El campo título es obligatorio');
+        $this->seeInElement('#field_content .help-block','El campo contenido es obligatorio');
     }
 }
