@@ -2,10 +2,13 @@
 
 namespace App\Http\Controllers;
 
+use App\Comment;
 use App\Post;
+use Illuminate\Database\QueryException;
 use Illuminate\Http\Request;
 
-class PostController extends Controller
+
+class CommentController extends Controller
 {
     /**
      * Display a listing of the resource.
@@ -14,8 +17,7 @@ class PostController extends Controller
      */
     public function index()
     {
-        $posts = Post::orderBy('created_at','DESC')->paginate();
-        return view('posts.index',compact('posts'));
+        //
     }
 
     /**
@@ -25,7 +27,7 @@ class PostController extends Controller
      */
     public function create()
     {
-        return view('posts.create');
+        //
     }
 
     /**
@@ -34,41 +36,41 @@ class PostController extends Controller
      * @param  \Illuminate\Http\Request  $request
      * @return \Illuminate\Http\Response
      */
-    public function store(Request $request)
+    public function store(Request $request,Post $post)
     {
-        $this->validate($request,[
-            'title' => 'required',
-            'content' => 'required'
-        ]);
+        $this->validate($request,['comment' => 'required']);
+        try{
 
-        $post = new Post($request->all());
 
-        auth()->user()->posts()->save($post);
+            $post->comment(auth()->user(),$request->get('comment'));
 
-        return $post->title;
+            return redirect($post->url)->with('alert','Tu comentario se ha publicado');
+        }catch (QueryException $e){
+            return redirect()->back()->with('alert','No se pudo guardar tu comentario');
+        }catch (\Exception $e){
+            return redirect()->back()->with('alert','No se pudo guardar tu comentario');
+        }
+
     }
 
     /**
      * Display the specified resource.
      *
-     * @param  \App\Post  $post
+     * @param  int  $id
      * @return \Illuminate\Http\Response
      */
-    public function show(Post $post,$slug)
+    public function show($id)
     {
-        if($post->slug != $slug){
-            return redirect($post->url,301);
-        }
-        return view('posts.show',compact('post'));
+        //
     }
 
     /**
      * Show the form for editing the specified resource.
      *
-     * @param  \App\Post  $post
+     * @param  int  $id
      * @return \Illuminate\Http\Response
      */
-    public function edit(Post $post)
+    public function edit($id)
     {
         //
     }
@@ -77,10 +79,10 @@ class PostController extends Controller
      * Update the specified resource in storage.
      *
      * @param  \Illuminate\Http\Request  $request
-     * @param  \App\Post  $post
+     * @param  int  $id
      * @return \Illuminate\Http\Response
      */
-    public function update(Request $request, Post $post)
+    public function update(Request $request, $id)
     {
         //
     }
@@ -88,10 +90,10 @@ class PostController extends Controller
     /**
      * Remove the specified resource from storage.
      *
-     * @param  \App\Post  $post
+     * @param  int  $id
      * @return \Illuminate\Http\Response
      */
-    public function destroy(Post $post)
+    public function destroy($id)
     {
         //
     }

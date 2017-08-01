@@ -24,12 +24,14 @@ class ShowPostTest extends FeaturesTestCase
             'user_id'   => $user->id
         ];
 
-        $post = factory(\App\Post::class)->make($post_data);
-        $user->posts()->save($post);
+        $post = factory(\App\Post::class)->create($post_data);
+        //$user->posts()->save($post);
         $this->actingAs($user);
         //when
 
-        $this->visit(route('posts.show',$post));
+        $this->visit($post->url);
+
+        //then
         $this->seeInElement('h1',$post_data['title']);
         $this->see($post_data['content']);
         $this->see($user->name);
@@ -39,23 +41,43 @@ class ShowPostTest extends FeaturesTestCase
     /**
      * @test
      */
-    public function require_auth_to_see_a_post(){
+    public function not_require_auth_to_see_a_post(){
         //Having
-        //having
-        $user       = $this->default_user();
+
         $post_data  = [
             'title'     => 'titulo del post',
-            'content'   => 'Cuerpo del post',
-            'user_id'   => $user->id
+            'content'   => 'Cuerpo del post'
+        ];
+
+        $post = $this->create_post($post_data);
+
+        //when
+        $this->visit($post->url);
+
+        //then
+        $this->see($post->title);
+    }
+
+    /**
+     * @test
+     */
+    public function redirect_old_url_to_new_url(){
+        $user       = $this->default_user();
+        $post_data  = [
+            'title'     => 'titulo viejo',
         ];
 
         $post = factory(\App\Post::class)->make($post_data);
         $user->posts()->save($post);
 
-        //when
-        $this->visit(route('posts.show',$post));
+        $old_url = $post->url;
 
+        $this->actingAs($user);
+
+        //when
+        $post->update(['title' => 'nuevo titulo']);
+        $this->visit($old_url);
         //then
-        $this->seePageIs(route('login'));
+        $this->seePageIs($post->url);
     }
 }

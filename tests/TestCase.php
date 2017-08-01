@@ -40,4 +40,9 @@ abstract class TestCase extends Illuminate\Foundation\Testing\TestCase
         $this->default_user = factory(\App\User::class)->create($data);
         return $this->default_user;
     }
+
+
+    public function create_post(array $data = []){
+        return factory(\App\Post::class)->create($data);
+    }
 }
