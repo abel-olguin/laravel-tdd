@@ -7,6 +7,7 @@ use Illuminate\Foundation\Testing\DatabaseTransactions;
 class IntegrationPostTest extends TestCase
 {
     use DatabaseTransactions;
+
     /**
      *
      * @test
