@@ -53,6 +53,13 @@ class CommentController extends Controller
 
     }
 
+
+    public function accept(Request $request, Comment $comment){
+        $this->authorize('accept',$comment);
+
+        $comment->markAsAnswer();
+        return redirect($comment->post->url);
+    }
     /**
      * Display the specified resource.
      *

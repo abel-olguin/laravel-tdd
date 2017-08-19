@@ -28,6 +28,10 @@ class Post extends Model
         return $this->hasMany(Comment::class);
     }
 
+    public function latest_comments(){
+        return $this->comments()->orderBy('created_at','DESC');
+    }
+
     public function comment(User $user,$content){
         $comment = new Comment(['comment' => $content]);
         $comment->user_id = $user->id;
